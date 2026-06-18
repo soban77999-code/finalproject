@@ -226,7 +226,9 @@
                 <div class="col-md-6 text-center">
                     <h2 class="section-title text-start" style="font-size: 2.5rem;">We Are Feane</h2>
                     <p class="text-muted mt-3">
-                        There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.
+                        
+                     Thank you for visiting and supporting our store Fast Food Restaurant. May you enjoy delicious food.
+                        
                     </p>
                     <button class="btn btn-yellow mt-3" onclick="alert('Thank you for support us!')">Thanks You</button>
                 </div>
