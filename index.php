@@ -77,7 +77,7 @@
             background-position: center;
             background-repeat: no-repeat;
             color: white;
-            padding: 160px 0 160px 0;
+            padding: 160px 0;
             position: relative;
         }
         .hero-title {
@@ -103,7 +103,6 @@
             margin-bottom: 10px;
         }
         
-        /* ស្ទីលសម្រាប់ប៊ូតុងលីងប្រភេទអាហារ (Category Links) */
         .category-link {
             color: #222831;
             background-color: #f0f0f0;
@@ -121,7 +120,6 @@
             box-shadow: 0 4px 10px rgba(255, 190, 51, 0.3);
         }
         
-        /* ស្ទីលកាតអាហារ៖ រូបភាពតូចសមសួន ផ្ទៃស បាតមានស្រមោលព្រាលៗ */
         .product-card {
             border-radius: 20px;
             overflow: hidden;
@@ -136,7 +134,7 @@
         }
         .product-card .card-img-top {
             width: 100%;
-            height: 230px; /* កម្ពស់រូបភាពរួមតូចជាងមុន បើធៀបនឹង 220px ចាស់ */
+            height: 230px;
             object-fit: cover;
             border-top-left-radius: 20px;
             border-top-right-radius: 20px;
@@ -150,31 +148,13 @@
             color: #222831;
         }
         .product-card .card-text {
-            color: #6c757d !important; /* ពណ៌អក្សរស្រទន់ងាយស្រួលមើល */
+            color: #6c757d !important;
             font-size: 0.85rem;
         }
         .product-price {
             font-weight: 600;
             font-size: 1.25rem;
             color: #ffbe33;
-        }
-
-        /* Slider dots indicators */
-        .dot-container {
-            margin-top: 40px;
-        }
-        .dot {
-            height: 12px;
-            width: 12px;
-            background-color: #bbb;
-            border-radius: 50%;
-            display: inline-block;
-            margin: 0 4px;
-        }
-        .dot.active {
-            background-color: #ffbe33;
-            width: 25px;
-            border-radius: 10px;
         }
     </style>
 </head>
@@ -224,7 +204,6 @@
     </header>
 
     <main class="container my-5">
-        
         <section id="menu_section" class="mb-5">
             <h2 class="section-title">Our Menu</h2>
             
@@ -247,7 +226,7 @@
                 <div class="col-md-6 text-center">
                     <h2 class="section-title text-start" style="font-size: 2.5rem;">We Are Feane</h2>
                     <p class="text-muted mt-3">
-                        There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text.
+                        There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.
                     </p>
                     <button class="btn btn-yellow mt-3" onclick="alert('Thank you for support us!')">Thanks You</button>
                 </div>
@@ -301,7 +280,7 @@
             <div class="modal-content" style="border-radius: 15px; overflow: hidden; border: none;">
                 <div class="modal-header bg-dark text-white">
                     <h5 class="modal-title" id="modal_product_name">Product Detail</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center bg-light">
                     <img id="modal_product_img" src="" class="img-fluid mb-3 rounded shadow-sm" style="max-height: 250px; width: 100%; object-fit: cover; display: none;">
@@ -321,117 +300,101 @@
     <script>
         const apiUrl = 'api.php';
         let productModal;
-        let currentCategory = 'all'; // បង្កើត Variable សម្រាប់ចាំចំណាំប្រភេទអាហារដែលកំពុងជ្រើសរើស
+        let detailModal;
+        let currentCategory = 'all';
 
         document.addEventListener("DOMContentLoaded", function() {
             productModal = new bootstrap.Modal(document.getElementById('productModal'));
-        });
+            detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
 
-        // [READ & SEARCH] រៀបចំឱ្យទាញទិន្នន័យមកបង្ហាញតាមការ Search ផង និងតាម Category ផង
-        
-
-// ២. អនុគមន៍ loadProducts ថ្មី ធានាដើរទាំង All និងប្រភេទផ្សេងៗ
-function loadProducts() {
-    const searchValue = document.getElementById('search_input').value.toLowerCase();
-    
-    // ទាញទិន្នន័យទាំងអស់ពី API មកសិន
-    fetch(`${apiUrl}?action=read`)
-        .then(res => res.json())
-        .then(data => {
-            let html = '';
-            
-            // ចាប់ផ្តើមត្រង (Filter) ទិន្នន័យតាមប៊ូតុងដែលបានចុច និងការវាយស្វែងរក
-            let filteredData = data.filter(p => {
-                const productName = (p.product_name || '').toLowerCase();
-                const productDesc = (p.description || '').toLowerCase();
-                
-                // ពិនិត្យលក្ខខណ្ឌ Search
-                const matchesSearch = productName.includes(searchValue) || productDesc.includes(searchValue);
-                
-                // ពិនិត្យលក្ខខណ្ឌប្រភេទអាហារ (Category)
-                let matchesCategory = true;
-                if (currentCategory !== 'all') {
-                    // ប្រសិនបើចុចប៊ូតុងណា វានឹងទៅរកមើលពាក្យគន្លឹះនោះ ក្នុងឈ្មោះផលិតផល (ឧទាហរណ៍៖ ចុច Burger រកពាក្យ burger)
-                    matchesCategory = productName.includes(currentCategory.toLowerCase()) || productDesc.includes(currentCategory.toLowerCase());
-                }
-                
-                return matchesSearch && matchesCategory;
+            // ព្រឹត្តិការណ៍នៅពេលបិទ Detail Modal ឱ្យលុប ?id=... ចេញពី URL វិញ
+            document.getElementById('detailModal').addEventListener('hidden.bs.modal', function () {
+                history.pushState(null, "", window.location.pathname);
             });
 
-            // បង្ហាញលទ្ធផលលើអេក្រង់
-            if(filteredData.length === 0) {
-                html = '<div class="col-12"><p class="text-center mt-4 text-muted">No products found in this category.</p></div>';
-            } else {
-                filteredData.forEach(p => {
-                    const imgUrl = p.image_url ? `uploads/${p.image_url}` : 'https://via.placeholder.com/150';
-                    const safeName = (p.product_name || '').replace(/'/g, "\\'");
-                    const safeDesc = (p.description || '').replace(/'/g, "\\'").replace(/\n/g, " ");
-
-                    html += `
-    <div class="col-md-6 col-lg-3 mb-4">
-        <div class="card h-100 product-card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
-            <img src="${imgUrl}" class="card-img-top" alt="Food Image" style="cursor: pointer; height: 220px; object-fit: cover;" onclick="viewDetail(${p.product_id})">
-            
-            <div class="card-body d-flex flex-column p-4">
-                
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h5 class="card-title fw-bold mb-0 text-dark" style="font-size: 1.15rem; max-width: 70%; line-height: 1.3;">
-                        ${p.product_name}
-                    </h5>
-                    <span class="fw-bold" style="color: #ffbe33; font-size: 1.2rem; white-space: nowrap;">
-                        $${parseFloat(p.price).toFixed(2)}
-                    </span>
-                </div>
-                
-                <p class="card-text text-muted flex-grow-1 mb-4" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 0.9rem;">
-                    ${p.description || 'No description available.'}
-                </p>
-                
-                <div class="d-flex justify-content-end gap-3 mt-auto">
-                    <button type="button" class="btn btn-outline-view" text-white rounded-pill px-4" onclick="viewDetail(${p.product_id})">View</button>
-                    <button class="btn btn-sm btn-warning text-white rounded-pill px-3" onclick="window.editProduct(event, ${p.product_id}, '${safeName}', ${p.price}, '${safeDesc}')">Edit</button>
-                    <button class="btn btn-sm btn-danger rounded-pill px-3" onclick="deleteProduct(${p.product_id})">Delete</button>
-                </div>
-                
-            </div>
-        </div>
-    </div>
-`;
-                });
+            // ពិនិត្យមើល URL ពេលទើបតែ Load ទំព័រ បើមាន ?id=... ឱ្យបើក Modal ស្វ័យប្រវត្ត
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            if (id) {
+                viewDetail(id);
             }
-            document.getElementById('product_list').innerHTML = html;
-        })
-        .catch(err => console.error("Error loading products:", err));
-}
+        });
 
-// ៣. អនុគមន៍ filterCategory សម្រាប់ប្តូរពណ៌ប៊ូតុង និងកំណត់ប្រភេទអាហារ
-function filterCategory(categoryName, event) {
-    if(event) event.preventDefault();
-    
-    // ដក Class active ពីប៊ូតុងទាំងអស់ រួចដាក់ឱ្យតែប៊ូតុងដែលបានចុច
-    const links = document.querySelectorAll('.category-link');
-    links.forEach(link => link.classList.remove('active'));
-    if(event) event.currentTarget.classList.add('active');
-    
-    // កំណត់ប្រភេទអាហារ រួចហៅទៅបង្ហាញឡើងវិញ
-    currentCategory = categoryName;
-    loadProducts();
-}
-        // មុខងារសម្រាប់ Filter ប្រភេទអាហារពេលចុចលើលីងនីមួយៗ
+        // [READ & SEARCH]
+        function loadProducts() {
+            const searchValue = document.getElementById('search_input').value.toLowerCase();
+            
+            fetch(`${apiUrl}?action=read`)
+                .then(res => res.json())
+                .then(data => {
+                    let html = '';
+                    
+                    let filteredData = data.filter(p => {
+                        const productName = (p.product_name || '').toLowerCase();
+                        const productDesc = (p.description || '').toLowerCase();
+                        
+                        const matchesSearch = productName.includes(searchValue) || productDesc.includes(searchValue);
+                        
+                        let matchesCategory = true;
+                        if (currentCategory !== 'all') {
+                            matchesCategory = productName.includes(currentCategory.toLowerCase()) || productDesc.includes(currentCategory.toLowerCase());
+                        }
+                        
+                        return matchesSearch && matchesCategory;
+                    });
+
+                    if(filteredData.length === 0) {
+                        html = '<div class="col-12"><p class="text-center mt-4 text-muted">No products found in this category.</p></div>';
+                    } else {
+                        filteredData.forEach(p => {
+                            const imgUrl = p.image_url ? `uploads/${p.image_url}` : 'https://via.placeholder.com/150';
+                            const safeName = (p.product_name || '').replace(/'/g, "\\'");
+                            const safeDesc = (p.description || '').replace(/'/g, "\\'").replace(/\n/g, " ");
+
+                            html += `
+                            <div class="col-md-6 col-lg-3 mb-4">
+                                <div class="card h-100 product-card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
+                                    <img src="${imgUrl}" class="card-img-top" alt="Food Image" style="cursor: pointer; height: 220px; object-fit: cover;" onclick="viewDetail(${p.product_id})">
+                                    <div class="card-body d-flex flex-column p-4">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h5 class="card-title fw-bold mb-0 text-dark" style="font-size: 1.15rem; max-width: 70%; line-height: 1.3;">
+                                                ${p.product_name}
+                                            </h5>
+                                            <span class="fw-bold" style="color: #ffbe33; font-size: 1.2rem; white-space: nowrap;">
+                                                $${parseFloat(p.price).toFixed(2)}
+                                            </span>
+                                        </div>
+                                        <p class="card-text text-muted flex-grow-1 mb-4" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 0.9rem;">
+                                            ${p.description || 'No description available.'}
+                                        </p>
+                                        <div class="d-flex justify-content-end gap-3 mt-auto">
+                                            <button type="button" class="btn btn-sm btn-outline-dark rounded-pill px-3" onclick="viewDetail(${p.product_id})">View</button>
+                                            <button class="btn btn-sm btn-warning text-white rounded-pill px-3" onclick="window.editProduct(event, ${p.product_id}, '${safeName}', ${p.price}, '${safeDesc}')">Edit</button>
+                                            <button class="btn btn-sm btn-danger rounded-pill px-3" onclick="deleteProduct(${p.product_id})">Delete</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+                        });
+                    }
+                    document.getElementById('product_list').innerHTML = html;
+                })
+                .catch(err => console.error("Error loading products:", err));
+        }
+
+        // [CATEGORY FILTER]
         function filterCategory(categoryName, event) {
             if(event) event.preventDefault();
             
-            // ដក Class active ពីលីងទាំងអស់ រួចដាក់ឱ្យតែលីងដែលបានចុច
             const links = document.querySelectorAll('.category-link');
             links.forEach(link => link.classList.remove('active'));
             if(event) event.currentTarget.classList.add('active');
             
-            // កំណត់ប្រភេទ Category ថ្មី រួចហៅអនុគមន៍ loadProducts() មកដំណើរការឡើងវិញ
             currentCategory = categoryName;
             loadProducts();
         }
 
-        // [DETAIL] មើលព័ត៌មានលម្អិត
+        // [DETAIL] ទាញទិន្នន័យមកបង្ហាញ និងរុញ ID ទៅលើ URL
         function viewDetail(id) {
             fetch(`${apiUrl}?action=detail&product_id=${id}`)
                 .then(res => res.json())
@@ -449,12 +412,16 @@ function filterCategory(categoryName, event) {
                         modalImg.style.display = 'none';
                     }
                     
-                    let modal = new bootstrap.Modal(document.getElementById('detailModal'));
-                    modal.show();
-                });
+                    // បន្ថែម ?id=... ទៅលើ URL ដោយមិនបាច់ Reload ទំព័រ
+                    history.pushState({ id: id }, "", "?id=" + id);
+                    
+                    // បង្ហាញ Modal
+                    detailModal.show();
+                })
+                .catch(err => console.error("Error loading product detail:", err));
         }
 
-        // មុខងារបង្ហាញ Modal សម្រាប់បន្ថែមផលិតផលថ្មី (Add New)
+        // [ADD MODAL]
         function showAddModal() {
             document.getElementById('productForm').reset();
             document.getElementById('product_id').value = '';
@@ -463,7 +430,7 @@ function filterCategory(categoryName, event) {
             productModal.show();
         }
 
-        // មុខងារបង្ហាញ Modal សម្រាប់កែប្រែផលិតផល (Edit)
+        // [EDIT MODAL]
         window.editProduct = function(event, id, name, price, desc) {
             event.stopPropagation();
             document.getElementById('product_id').value = id;
@@ -476,7 +443,7 @@ function filterCategory(categoryName, event) {
             productModal.show();
         };
 
-        // [CREATE / UPDATE] រក្សាទុកទិន្នន័យ
+        // [CREATE / UPDATE]
         function saveProduct(e) {
             e.preventDefault();
             const id = document.getElementById('product_id').value;
@@ -509,7 +476,7 @@ function filterCategory(categoryName, event) {
             });
         }
 
-        // [DELETE] លុបទិន្នន័យ
+        // [DELETE]
         function deleteProduct(id) {
             if(confirm("Are you sure you want to delete this product?")) {
                 fetch(`${apiUrl}?action=delete&product_id=${id}`)
@@ -521,7 +488,7 @@ function filterCategory(categoryName, event) {
             }
         }
 
-        // មុខងារកំណត់ Active Link នៅពេលធ្វើការ Scroll អេក្រង់
+        // [SCROLL EFFECT]
         window.addEventListener('scroll', () => {
             const sections = document.querySelectorAll('header, #menu_section, #about_section');
             const navLinks = document.querySelectorAll('.nav-link-custom');
@@ -529,7 +496,7 @@ function filterCategory(categoryName, event) {
             let current = '';
             sections.forEach(section => {
                 const sectionTop = section.offsetTop;
-                if (pageYOffset >= sectionTop - 150) {
+                if (window.pageYOffset >= sectionTop - 150) {
                     current = section.getAttribute('id') || '';
                 }
             });
