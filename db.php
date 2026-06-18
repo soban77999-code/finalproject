@@ -2,7 +2,7 @@
 $host = "localhost";
 $db_name = "store_db";
 $username = "root";
-$password = ""; // ផ្លាស់ប្តូរទៅតាមការកំណត់របស់អ្នក បើប្រើ Port ផ្សេង
+$password = ""; 
 
 try {
     $conn = new PDO("mysql:host=$host;dbname=$db_name;charset=utf8", $username, $password);

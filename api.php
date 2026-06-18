@@ -90,7 +90,7 @@ elseif ($action == 'update') {
     }
 }
 
-// 5. DELETE PRODUCT (បានកែសម្រួលរួចរាល់)
+// 5. DELETE PRODUCT 
 elseif ($action == 'delete') {
     $id = isset($_GET['product_id']) ? $_GET['product_id'] : '';
     if(!empty($id)) {

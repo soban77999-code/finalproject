@@ -309,12 +309,11 @@
             productModal = new bootstrap.Modal(document.getElementById('productModal'));
             detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
 
-            // ព្រឹត្តិការណ៍នៅពេលបិទ Detail Modal ឱ្យលុប ?id=... ចេញពី URL វិញ
+            
             document.getElementById('detailModal').addEventListener('hidden.bs.modal', function () {
                 history.pushState(null, "", window.location.pathname);
             });
 
-            // ពិនិត្យមើល URL ពេលទើបតែ Load ទំព័រ បើមាន ?id=... ឱ្យបើក Modal ស្វ័យប្រវត្ត
             const urlParams = new URLSearchParams(window.location.search);
             const id = urlParams.get('id');
             if (id) {
@@ -396,7 +395,6 @@
             loadProducts();
         }
 
-        // [DETAIL] ទាញទិន្នន័យមកបង្ហាញ និងរុញ ID ទៅលើ URL
         function viewDetail(id) {
             fetch(`${apiUrl}?action=detail&product_id=${id}`)
                 .then(res => res.json())
@@ -414,10 +412,8 @@
                         modalImg.style.display = 'none';
                     }
                     
-                    // បន្ថែម ?id=... ទៅលើ URL ដោយមិនបាច់ Reload ទំព័រ
                     history.pushState({ id: id }, "", "?id=" + id);
                     
-                    // បង្ហាញ Modal
                     detailModal.show();
                 })
                 .catch(err => console.error("Error loading product detail:", err));
